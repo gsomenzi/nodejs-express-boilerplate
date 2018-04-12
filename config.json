@@ -4,5 +4,9 @@
   },
   "mongodb": {
     "url": "mongodb://gsomenzi:3wKr5FnE6vJc9e81@cluster0-shard-00-00-q05nj.mongodb.net:27017,cluster0-shard-00-01-q05nj.mongodb.net:27017,cluster0-shard-00-02-q05nj.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin"
+  },
+  "seguranca": {
+    "compimentoMinimoSenha": 6,
+    "saltRounds": 10
   }
 }
