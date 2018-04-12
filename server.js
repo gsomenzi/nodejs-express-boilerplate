@@ -6,60 +6,67 @@ const configuracoes = require('./config.json')
 const Usuario = require('./app/models/usuario')
 
 mongoose.connect(configuracoes.mongodb.url)
+  .then(res => {
+    console.log('- Banco de dados conectado com sucesso.')
+  })
+  .catch(err => {
+    console.log('- Falha ao conectar o banco de dados.')
+    console.log(err)
+  })
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 const porta = process.env.PORT || configuracoes.webserver.porta
 const router = express.Router()
 
-router.route('/bears')
+router.route('/usuarios')
   .post(function (req, res) {
-    var bear = new Usuario()
-    bear.name = req.body.name
-    bear.save(function (err) {
+    var usuario = new Usuario()
+    usuario.name = req.body.name
+    usuario.save(function (err) {
       if (err) res.send(err)
-      res.json({ message: 'Bear created!' })
+      res.json({ message: 'Usuario criado!' })
     })
   })
   .get(function (req, res) {
-    Usuario.find(function (err, bears) {
+    Usuario.find(function (err, usuarios) {
       if (err) res.send(err)
-      res.json(bears)
+      res.json(usuarios)
     })
   })
 
-router.route('/bears/:bear_id')
+router.route('/usuarios/:idUsuario')
   .get(function (req, res) {
-    Usuario.findById(req.params.bear_id, function (err, bear) {
+    Usuario.findById(req.params.idUsuario, function (err, usuario) {
       if (err) res.send(err)
-      res.json(bear)
+      res.json(usuario)
     })
   })
   .put(function (req, res) {
-    Usuario.findById(req.params.bear_id, function (err, bear) {
+    Usuario.findById(req.params.idUsuario, function (err, usuario) {
       if (err) res.send(err)
-      bear.name = req.body.name
-      bear.save(function (err) {
+      usuario.name = req.body.name
+      usuario.save(function (err) {
         if (err) res.send(err)
-        res.json({ message: 'Bear updated!' })
+        res.json({ message: 'Usuario atualizado!' })
       })
     })
   })
   .delete(function (req, res) {
     Usuario.remove({
-      _id: req.params.bear_id
-    }, function (err, bear) {
+      _id: req.params.idUsuario
+    }, function (err, usuario) {
       if (err) res.send(err)
-      res.json({ message: 'Successfully deleted' })
+      res.json({ message: 'Usuario removido' })
     })
   })
 
 router.get('/', function (req, res) {
-  res.json({ message: 'hooray! welcome to our api!' })
+  res.json({ message: 'Bem vindo a API!' })
 })
 
 app.use('/api', router)
 
 // =============================================================================
 app.listen(porta)
-console.log('Magic happens on porta ' + porta)
+console.log(`- Servidor WEB iniciado na porta ${porta}`)
