@@ -14,14 +14,14 @@ const schemaUsuario = new Schema({
     type: String,
     required: [true, 'Um nome de usuário deve ser informado.'],
     index: {
-      unique: [true, 'O nome de usuário já está em uso.']
+      unique: true
     }
   },
   email: {
     type: String,
     required: [true, 'Um endereço de e-mail deve ser informado.'],
     index: {
-      unique: [true, 'O endereço de e-mail já está em uso por outro usuário.']
+      unique: true
     }
   },
   senha: {
