@@ -10,11 +10,13 @@ const camposBuscaPadrao = {
 }
 
 module.exports = {
-  validarNovoUsuario: validarNovoUsuario,
-  adicionarUsuarioLocal: adicionarUsuarioLocal,
   buscarUsuarios: buscarUsuarios,
   buscarUsuarioPorId: buscarUsuarioPorId,
-  removerUsuario: removerUsuario
+  adicionarUsuarioLocal: adicionarUsuarioLocal,
+  atualizarUsuario: atualizarUsuario,
+  removerUsuario: removerUsuario,
+  validarNovoUsuario: validarNovoUsuario,
+  validarObjAtualizacaoUsuario: validarObjAtualizacaoUsuario
 }
 
 function buscarUsuarioPorId (id, callback) {
@@ -28,13 +30,6 @@ function buscarUsuarios (callback) {
   Usuario.find().select(camposBuscaPadrao).exec((err, usuarios) => {
     if (err) return callback(err, null)
     return callback(null, usuarios)
-  })
-}
-
-function removerUsuario (id, callback) {
-  Usuario.remove({_id: id}).exec((err) => {
-    if (err) return callback(err)
-    return callback(null)
   })
 }
 
@@ -57,9 +52,52 @@ function adicionarUsuarioLocal (obj, callback) {
   })
 }
 
+function atualizarUsuario (id, obj, callback) {
+  validarObjAtualizacaoUsuario(obj, (err, objValido) => {
+    if (err) return callback(err, null)
+    Usuario.update({_id: id}, {$set: objValido}).exec((err, update) => {
+      if (err) return callback(err, null)
+      buscarUsuarioPorId(id, (err, usuario) => {
+        if (err) return callback(err, null)
+        return callback(null, usuario)
+      })
+    })
+  })
+}
+
+function removerUsuario (id, callback) {
+  Usuario.remove({_id: id}).exec((err) => {
+    if (err) return callback(err)
+    return callback(null)
+  })
+}
+
 function validarNovoUsuario (obj, callback) {
-  if (typeof obj !== 'object') return callback(new TypeError('O usuário não foi informado no formato correto. Entre em contato com o administrador do sistema.'))
+  if (typeof obj !== 'object') {
+    let err = new Error('O usuário não foi informado no formato correto. Entre em contato com o administrador do sistema.')
+    err.code = 'ADICIONAR_USUARIO_NAO_OBJETO'
+    return callback(err)
+  }
+  if (!obj.senha || typeof obj.senha !== 'string') {
+    let err = new Error('Uma senha deve ser informada para o novo usuário.')
+    err.code = 'ADICIONAR_USUARIO_SENHA_NAO_INFORMADA'
+    return callback(err)
+  }
   obj.dtCriado = new Date()
   obj.dtAtualizado = new Date()
   return callback(null, obj)
+}
+
+function validarObjAtualizacaoUsuario (obj, callback) {
+  if (typeof obj !== 'object') {
+    let err = new Error('O usuário não pode ser atualizado pois não foi possível identificar os campos para atualização.')
+    err.code = 'ATUALIZAR_USUARIO_NAO_OBJETO'
+    return callback(err)
+  }
+  let objValido = {}
+  if (obj._id) delete obj._id
+  if (obj.nome && typeof obj.nome === 'string') objValido.nome = obj.nome
+  if (obj.usuario && typeof obj.usuario === 'string') objValido.usuario = obj.usuario
+  if (JSON.stringify(objValido) !== '{}') objValido.dtAtualizado = new Date()
+  callback(null, objValido)
 }

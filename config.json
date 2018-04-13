@@ -7,6 +7,9 @@
   },
   "seguranca": {
     "compimentoMinimoSenha": 6,
-    "saltRounds": 10
+    "habilitarAutenticacao": true,
+    "saltRounds": 10,
+    "segredoToken": "PORCOARANHA",
+    "minutosExpiracaoToken": 1440
   }
 }

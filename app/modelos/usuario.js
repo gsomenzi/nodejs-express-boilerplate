@@ -45,9 +45,9 @@ schemaUsuario.methods.compararSenha = function (senha, hash, callback) {
   bcrypt.compare(senha, hash, function (err, res) {
     if (err) {
       console.log(err)
-      return false
+      return callback(null, res)
     }
-    return res
+    return callback(null, res)
   })
 }
 

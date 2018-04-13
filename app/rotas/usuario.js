@@ -1,42 +1,38 @@
-const Usuario = require('../modelos/usuario')
 const UsuarioController = require('../controladores/usuario')
+const AuthMiddleware = require('../middlewares/autenticacao-middleware')
 
 module.exports = function (router) {
   // ROTAS PARA /usuarios
-  router.route('/usuarios')
-    .post(function (req, res) {
+  router.use(AuthMiddleware).route('/usuarios')
+    .post(function (req, res, next) {
       UsuarioController.adicionarUsuarioLocal(req.body, (err, usuario) => {
-        if (err) return res.send(err)
+        if (err) return next(err)
         return res.status(201).json(usuario)
       })
     })
-    .get(function (req, res) {
+    .get(function (req, res, next) {
       UsuarioController.buscarUsuarios((err, usuarios) => {
-        if (err) return res.send(err)
+        if (err) return next(err)
         return res.status(200).json(usuarios)
       })
     })
   // ROTAS PARA /usuarios/idUsuario
-  router.route('/usuarios/:idUsuario')
-    .get(function (req, res) {
+  router.use(AuthMiddleware).route('/usuarios/:idUsuario')
+    .get(function (req, res, next) {
       UsuarioController.buscarUsuarioPorId(req.params.idUsuario, (err, usuario) => {
-        if (err) return res.send(err)
+        if (err) return next(err)
         return res.status(200).json(usuario)
       })
     })
-    .put(function (req, res) {
-      Usuario.findById(req.params.idUsuario, function (err, usuario) {
-        if (err) res.send(err)
-        usuario.name = req.body.name
-        usuario.save(function (err) {
-          if (err) res.send(err)
-          res.json({ message: 'Usuario atualizado!' })
-        })
+    .put(function (req, res, next) {
+      UsuarioController.atualizarUsuario(req.params.idUsuario, req.body, (err, usuario) => {
+        if (err) return next(err)
+        return res.status(200).json(usuario)
       })
     })
-    .delete(function (req, res) {
+    .delete(function (req, res, next) {
       UsuarioController.removerUsuario(req.params.idUsuario, (err) => {
-        if (err) return res.send(err)
+        if (err) return next(err)
         return res.status(204).end()
       })
     })
