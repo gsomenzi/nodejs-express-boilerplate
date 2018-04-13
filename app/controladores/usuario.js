@@ -5,7 +5,6 @@ const camposBuscaPadrao = {
   nome: 1,
   usuario: 1,
   email: 1,
-  senha: 1,
   tipo: 1
 }
 

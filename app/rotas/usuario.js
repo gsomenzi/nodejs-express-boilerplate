@@ -1,9 +1,8 @@
 const UsuarioController = require('../controladores/usuario')
-const AuthMiddleware = require('../middlewares/autenticacao-middleware')
 
-module.exports = function (router) {
+module.exports = function (routers) {
   // ROTAS PARA /usuarios
-  router.use(AuthMiddleware).route('/usuarios')
+  routers.autenticado.route('/usuarios')
     .post(function (req, res, next) {
       UsuarioController.adicionarUsuarioLocal(req.body, (err, usuario) => {
         if (err) return next(err)
@@ -17,7 +16,7 @@ module.exports = function (router) {
       })
     })
   // ROTAS PARA /usuarios/idUsuario
-  router.use(AuthMiddleware).route('/usuarios/:idUsuario')
+  routers.autenticado.route('/usuarios/:idUsuario')
     .get(function (req, res, next) {
       UsuarioController.buscarUsuarioPorId(req.params.idUsuario, (err, usuario) => {
         if (err) return next(err)

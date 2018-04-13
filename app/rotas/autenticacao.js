@@ -2,9 +2,9 @@ const configuracao = require('../../config.json')
 const Usuario = require('../modelos/usuario')
 var jwt = require('jsonwebtoken')
 
-module.exports = function (router) {
+module.exports = function (routers) {
   // ROTAS PARA /login
-  router.route('/login')
+  routers.naoAutenticado.route('/login')
     .post(function (req, res, next) {
       if (!req.body.usuario && !req.body.email) {
         let err = new Error('Você deve informar o nome de usuário ou e-mail.')
