@@ -82,9 +82,25 @@ function validarNovoUsuario (obj, callback) {
     err.code = 'ADICIONAR_USUARIO_SENHA_NAO_INFORMADA'
     return callback(err)
   }
-  obj.dtCriado = new Date()
-  obj.dtAtualizado = new Date()
-  return callback(null, obj)
+  Usuario.count({email: obj.email}).exec((err, count) => {
+    if (err) return callback(err)
+    if (count) {
+      let err = new Error('O endereço de e-mail já está em uso.')
+      err.code = 'ADICIONAR_USUARIO_EMAIL_EM_USO'
+      return callback(err)
+    }
+    Usuario.count({usuario: obj.usuario}).exec((err, count) => {
+      if (err) return callback(err)
+      if (count) {
+        let err = new Error('O nome de usuário já está em uso.')
+        err.code = 'ADICIONAR_USUARIO_USUARIO_EM_USO'
+        return callback(err)
+      }
+      obj.dtCriado = new Date()
+      obj.dtAtualizado = new Date()
+      return callback(null, obj)
+    })
+  })
 }
 
 function validarObjAtualizacaoUsuario (obj, callback) {
